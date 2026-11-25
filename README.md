@@ -2,7 +2,7 @@
 
 Runs a Cloudflare Tunnel (`cloudflared`) hidden in the background on a Windows PC, with a tray icon that shows whether it's connected. A Cloudflare Worker reaches a service on this PC through the tunnel, using a **Workers VPC service**.
 
-**Step-by-step installation guide:** [docs/setup.html](docs/setup.html) (open it in a browser).
+**Step-by-step installation guide:** [docs/setup.html](docs/setup.html) (open it in a browser), or [docs/setup.md](docs/setup.md) for agents and terminals.
 
 ## Quick setup
 
@@ -23,6 +23,7 @@ Runs a Cloudflare Tunnel (`cloudflared`) hidden in the background on a Windows P
 | `cloudflare/setup.ps1` | Creates the tunnel and the Workers VPC service with wrangler. Re-runnable. |
 | `cloudflare/status.ps1` | Shows the tunnel and VPC service as Cloudflare sees them. |
 | `docs/setup.html` | Detailed installation guide. |
+| `docs/setup.md` | The same guide in Markdown, for agents and terminals. Keep both in sync. |
 
 Not in git: `cloudflared.exe` (download it), `cloudflared-tray.exe` (build it), `.env`, logs.
 

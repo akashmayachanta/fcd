@@ -173,7 +173,8 @@ npx wrangler whoami</code></pre></div>
     </ol>
     <p>It's safe to run again: any step whose ID is already in <code>.env</code> is skipped. The commands it runs are:</p>
     <div class="cmd"><pre><code>npx wrangler tunnel create &lt;TUNNEL_NAME&gt;
-npx wrangler vpc service create &lt;VPC_SERVICE_NAME&gt; --type http --tunnel-id &lt;TUNNEL_ID&gt; --hostname &lt;HOST&gt; --http-port &lt;PORT&gt;</code></pre></div>
+npx wrangler vpc service create &lt;VPC_SERVICE_NAME&gt; --type http --tunnel-id &lt;TUNNEL_ID&gt; --ipv4 &lt;HOST&gt; --http-port &lt;PORT&gt;
+# --hostname &lt;HOST&gt; instead of --ipv4 when HOST is a DNS name</code></pre></div>
     <div class="note"><p><code>wrangler tunnel</code> is marked experimental. If it fails, create the tunnel in the dashboard instead (Zero Trust → Networks → Tunnels → Create a tunnel → Cloudflared), paste its ID into <code>TUNNEL_ID</code>, and run the script again.</p></div>
   </section>
 
@@ -247,7 +248,7 @@ Invoke-RestMethod http://127.0.0.1:20251/ready
     </dl>
   </section>
 
-  <footer>See <a href="../README.md">README.md</a> for the overview and file list.</footer>
+  <footer>See <a href="../README.md">README.md</a> for the overview and file list, and <a href="setup.md">setup.md</a> for this guide in Markdown.</footer>
 </main>
 <script>
   document.querySelectorAll('.cmd').forEach(function (box) {
