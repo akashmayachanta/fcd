@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tunnel Tray Setup</title>
+<style>
+  :root {
+    --bg: #fbfaf8; --surface: #ffffff; --text: #1d1d1f; --muted: #5f6368; --line: #e4e2dd;
+    --accent: #f38020; --accent-ink: #b85a0c; --code-bg: #f3f1ed; --note-bg: #fff6ec; --warn-bg: #fdf0ef; --warn: #b3261e;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #141414; --surface: #1c1c1c; --text: #ececec; --muted: #a3a3a3; --line: #2e2e2e;
+      --accent: #f6821f; --accent-ink: #ffa552; --code-bg: #232323; --note-bg: #2a2118; --warn-bg: #2c1b1a; --warn: #f28b82;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #141414; --surface: #1c1c1c; --text: #ececec; --muted: #a3a3a3; --line: #2e2e2e;
+    --accent: #f6821f; --accent-ink: #ffa552; --code-bg: #232323; --note-bg: #2a2118; --warn-bg: #2c1b1a; --warn: #f28b82;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font: 16px/1.6 "Segoe UI Variable", "Segoe UI", system-ui, -apple-system, sans-serif;
+  }
+  main { max-width: 760px; margin: 0 auto; padding: 48px 16px 80px; }
+  header { margin-bottom: 40px; }
+  .eyebrow { color: var(--accent-ink); font-weight: 600; font-size: 13px; letter-spacing: .06em; text-transform: uppercase; }
+  h1 { font-size: 34px; line-height: 1.2; margin: 6px 0 12px; letter-spacing: -.01em; }
+  .lede { color: var(--muted); font-size: 18px; margin: 0; }
+  nav { border: 1px solid var(--line); background: var(--surface); border-radius: 12px; padding: 16px 20px; margin-bottom: 40px; }
+  nav strong { font-size: 13px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+  nav ol { margin: 8px 0 0; padding-left: 22px; columns: 2; column-gap: 32px; }
+  nav a { color: var(--text); text-decoration: none; }
+  nav a:hover { color: var(--accent-ink); text-decoration: underline; }
+  section { margin: 0 0 44px; scroll-margin-top: 16px; }
+  h2 { font-size: 22px; margin: 0 0 10px; display: flex; gap: 12px; align-items: baseline; }
+  h2 .n { color: var(--accent-ink); font-variant-numeric: tabular-nums; min-width: 1.4em; }
+  h3 { font-size: 16px; margin: 20px 0 6px; }
+  p, li { max-width: 68ch; }
+  a { color: var(--accent-ink); }
+  code { font: 14px/1.5 "Cascadia Code", Consolas, ui-monospace, monospace; background: var(--code-bg); padding: 1px 5px; border-radius: 4px; }
+  .cmd { position: relative; margin: 10px 0 14px; }
+  pre {
+    margin: 0; background: var(--code-bg); border: 1px solid var(--line); border-radius: 8px;
+    padding: 12px 14px; overflow-x: auto; font: 14px/1.55 "Cascadia Code", Consolas, ui-monospace, monospace;
+  }
+  pre code { background: none; padding: 0; }
+  .copy {
+    position: absolute; top: 7px; right: 7px; font: 12px "Segoe UI", system-ui, sans-serif;
+    background: var(--surface); color: var(--muted); border: 1px solid var(--line); border-radius: 6px; padding: 3px 9px; cursor: pointer;
+  }
+  .copy:hover { color: var(--text); }
+  .note, .warn { border-radius: 8px; padding: 12px 16px; margin: 14px 0; }
+  .note { background: var(--note-bg); border-left: 3px solid var(--accent); }
+  .warn { background: var(--warn-bg); border-left: 3px solid var(--warn); }
+  .note p, .warn p { margin: 0; }
+  table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 15px; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--muted); font-weight: 600; font-size: 13px; }
+  td:first-child { white-space: nowrap; }
+  .table-wrap { overflow-x: auto; }
+  dl { margin: 0; }
+  dt { font-weight: 600; margin-top: 16px; }
+  dd { margin: 4px 0 0; color: var(--text); }
+  footer { color: var(--muted); font-size: 14px; border-top: 1px solid var(--line); padding-top: 20px; }
+  @media (max-width: 560px) {
+    h1 { font-size: 28px; }
+    nav ol { columns: 1; }
+    main { padding-top: 32px; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <div class="eyebrow">cloudflare-dns · installation</div>
+    <h1>Set up the tunnel tray app</h1>
+    <p class="lede">Run a Cloudflare Tunnel hidden on a Windows PC, with a tray icon for its status, and let a Cloudflare Worker reach a local service through it.</p>
+  </header>
+
+  <nav aria-label="Steps">
+    <strong>Steps</strong>
+    <ol>
+      <li><a href="#requirements">Requirements</a></li>
+      <li><a href="#files">Get the files</a></li>
+      <li><a href="#cloudflared">Download cloudflared</a></li>
+      <li><a href="#env">Create .env</a></li>
+      <li><a href="#login">Log in to wrangler</a></li>
+      <li><a href="#cloud">Create the tunnel and VPC service</a></li>
+      <li><a href="#token">Add the tunnel token</a></li>
+      <li><a href="#build">Build the tray app</a></li>
+      <li><a href="#run">Run it and start at login</a></li>
+      <li><a href="#worker">Connect your Worker</a></li>
+      <li><a href="#verify">Check it works</a></li>
+      <li><a href="#trouble">Troubleshooting</a></li>
+    </ol>
+  </nav>
+
+  <section id="requirements">
+    <h2><span class="n">1</span>Requirements</h2>
+    <ul>
+      <li>Windows 10 or 11. The build uses the .NET Framework compiler and Windows PowerShell 5.1, which ship with Windows.</li>
+      <li><a href="https://nodejs.org">Node.js</a> 18 or newer, for <code>npx wrangler</code>. You only need it during setup.</li>
+      <li>A Cloudflare account, with access to Zero Trust (the free plan is enough).</li>
+      <li>The local service the Worker should reach, for example a web app on <code>http://127.0.0.1:8050</code>.</li>
+    </ul>
+    <p>Run every command below in <strong>PowerShell</strong>, from the project folder.</p>
+    <div class="note"><p>If PowerShell refuses to run <code>.ps1</code> scripts, allow local scripts for your user once:</p></div>
+    <div class="cmd"><pre><code>Set-ExecutionPolicy -Scope CurrentUser RemoteSigned</code></pre></div>
+  </section>
+
+  <section id="files">
+    <h2><span class="n">2</span>Get the files</h2>
+    <p>Clone the repository, or copy the folder, to a permanent location. The tray app runs from that folder, and <em>Start at login</em> stores the path.</p>
+    <div class="cmd"><pre><code>git clone &lt;repo-url&gt;
+cd fcd</code></pre></div>
+    <p>Every command below runs from this folder and uses paths relative to it.</p>
+  </section>
+
+  <section id="cloudflared">
+    <h2><span class="n">3</span>Download cloudflared</h2>
+    <p><code>cloudflared.exe</code> is Cloudflare's tunnel client. It isn't in git because it's about 55 MB, so download it into the project folder:</p>
+    <div class="cmd"><pre><code>Invoke-WebRequest https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-windows-amd64.exe -OutFile cloudflared.exe
+.\cloudflared.exe --version</code></pre></div>
+    <p>To update it later, exit the tray app and run the same download again.</p>
+  </section>
+
+  <section id="env">
+    <h2><span class="n">4</span>Create .env</h2>
+    <p>All settings live in <code>.env</code>. It's git-ignored because it holds the tunnel token. Start from the template:</p>
+    <div class="cmd"><pre><code>Copy-Item .env.example .env
+notepad .env</code></pre></div>
+    <p>For now, fill in only the values in bold. The setup script fills in the IDs, and the token comes in step 7.</p>
+    <div class="table-wrap">
+    <table>
+      <thead><tr><th>Key</th><th>What it is</th></tr></thead>
+      <tbody>
+        <tr><td><code>TUNNEL_TOKEN</code></td><td>The tunnel's secret connector token. Added in step 7.</td></tr>
+        <tr><td><code>CLOUDFLARE_ACCOUNT_ID</code></td><td>Your account ID. Optional: the setup script fills it in from your wrangler login.</td></tr>
+        <tr><td><strong><code>TUNNEL_NAME</code></strong></td><td>Name for the tunnel, e.g. <code>my-tunnel</code>.</td></tr>
+        <tr><td><code>TUNNEL_ID</code></td><td>Filled in by the setup script. If the tunnel already exists, paste its ID here and the script will skip creating it.</td></tr>
+        <tr><td><strong><code>VPC_SERVICE_NAME</code></strong></td><td>Name for the Workers VPC service, e.g. <code>tasks</code>.</td></tr>
+        <tr><td><strong><code>VPC_SERVICE_HOSTNAME</code></strong></td><td>Where the local service listens, as seen from this PC. Default <code>127.0.0.1</code>. Use it rather than <code>localhost</code>, which can resolve to IPv6 (<code>::1</code>) first.</td></tr>
+        <tr><td><strong><code>VPC_SERVICE_HTTP_PORT</code></strong></td><td>The local service's port, e.g. <code>8050</code>.</td></tr>
+        <tr><td><code>VPC_SERVICE_ID</code></td><td>Filled in by the setup script.</td></tr>
+        <tr><td><code>WORKER_URL</code></td><td>The Worker that uses the service. For reference only.</td></tr>
+        <tr><td><code>APP_NAME</code></td><td>Name shown in the tray tooltip and notifications.</td></tr>
+        <tr><td><code>APP_PUBLISHER</code></td><td>Publisher stamped into <code>cloudflared-tray.exe</code>, shown in Task Manager and file properties. Default <code>Cloudflared Tray</code>. Rebuild (step 8) after changing it.</td></tr>
+        <tr><td><code>TUNNEL_PROTOCOL</code></td><td><code>http2</code> (works through most firewalls) or <code>quic</code>.</td></tr>
+        <tr><td><code>METRICS_PORT</code></td><td>Local port where cloudflared reports its status. Default <code>20251</code>.</td></tr>
+      </tbody>
+    </table>
+    </div>
+  </section>
+
+  <section id="login">
+    <h2><span class="n">5</span>Log in to wrangler</h2>
+    <p>Wrangler is Cloudflare's command-line tool. This opens a browser so you can approve access to your account:</p>
+    <div class="cmd"><pre><code>npx wrangler login
+npx wrangler whoami</code></pre></div>
+  </section>
+
+  <section id="cloud">
+    <h2><span class="n">6</span>Create the tunnel and VPC service</h2>
+    <div class="cmd"><pre><code>.\cloudflare\setup.ps1</code></pre></div>
+    <p>The script:</p>
+    <ol>
+      <li>checks your wrangler login and records your account ID;</li>
+      <li>creates the tunnel <code>TUNNEL_NAME</code>, or reuses it if it already exists, and writes <code>TUNNEL_ID</code> to <code>.env</code>;</li>
+      <li>creates a Workers VPC service that points at <code>http://VPC_SERVICE_HOSTNAME:VPC_SERVICE_HTTP_PORT</code> through that tunnel, and writes <code>VPC_SERVICE_ID</code> to <code>.env</code>.</li>
+    </ol>
+    <p>It's safe to run again: any step whose ID is already in <code>.env</code> is skipped. The commands it runs are:</p>
+    <div class="cmd"><pre><code>npx wrangler tunnel create &lt;TUNNEL_NAME&gt;
+npx wrangler vpc service create &lt;VPC_SERVICE_NAME&gt; --type http --tunnel-id &lt;TUNNEL_ID&gt; --hostname &lt;HOST&gt; --http-port &lt;PORT&gt;</code></pre></div>
+    <div class="note"><p><code>wrangler tunnel</code> is marked experimental. If it fails, create the tunnel in the dashboard instead (Zero Trust → Networks → Tunnels → Create a tunnel → Cloudflared), paste its ID into <code>TUNNEL_ID</code>, and run the script again.</p></div>
+  </section>
+
+  <section id="token">
+    <h2><span class="n">7</span>Add the tunnel token</h2>
+    <p>The token lets <code>cloudflared</code> run as this tunnel. To get it:</p>
+    <ol>
+      <li>Open <a href="https://one.dash.cloudflare.com">Cloudflare Zero Trust</a> → <strong>Networks</strong> → <strong>Tunnels</strong>.</li>
+      <li>Open your tunnel → <strong>Configure</strong>.</li>
+      <li>Under the install commands, copy the long string after <code>--token</code>.</li>
+      <li>Paste it into <code>.env</code> as <code>TUNNEL_TOKEN=...</code>.</li>
+    </ol>
+    <div class="warn"><p>Treat the token like a password: anyone who has it can run your tunnel. Keep it only in <code>.env</code>, and never commit it. If it leaks, rotate it from the tunnel's page in the dashboard.</p></div>
+  </section>
+
+  <section id="build">
+    <h2><span class="n">8</span>Build the tray app</h2>
+    <div class="cmd"><pre><code>.\build-tray.ps1</code></pre></div>
+    <p>This compiles <code>cloudflared-tray.exe</code>, a small host that runs <code>cloudflared-tray.ps1</code> with no console window and uses <code>cloudflared-tray.ico</code> as its icon. You only need to rebuild after changing <code>APP_PUBLISHER</code>, the exe's name or the icon. Other changes to <code>.env</code> or the <code>.ps1</code> just need a restart of the tray app. If the tray app is already running, the script stops it for the build and starts it again afterwards.</p>
+  </section>
+
+  <section id="run">
+    <h2><span class="n">9</span>Run it and start at login</h2>
+    <div class="cmd"><pre><code>.\cloudflared-tray.exe</code></pre></div>
+    <ul>
+      <li>A cloud icon appears in the system tray: <strong>white</strong> when connected, <strong>faded gray</strong> while connecting or stopped.</li>
+      <li>Right-click it → tick <strong>Start at login</strong>.</li>
+      <li>The menu also has Stop/Start, Restart, Open log, and Open Cloudflare dashboard.</li>
+    </ul>
+    <div class="note"><p>Windows may put new icons in the <code>^</code> overflow menu. To keep it visible, drag it onto the taskbar, or turn it on under Settings → Personalization → Taskbar → Other system tray icons.</p></div>
+  </section>
+
+  <section id="worker">
+    <h2><span class="n">10</span>Connect your Worker</h2>
+    <p>In the Worker's project, bind the VPC service in <code>wrangler.jsonc</code>, using <code>VPC_SERVICE_ID</code> from <code>.env</code>:</p>
+    <div class="cmd"><pre><code>{
+  "vpc_services": [
+    { "binding": "TASKS", "service_id": "&lt;VPC_SERVICE_ID&gt;" }
+  ]
+}</code></pre></div>
+    <p>Then call the local service through the binding:</p>
+    <div class="cmd"><pre><code>const res = await env.TASKS.fetch("http://localhost/api/health");</code></pre></div>
+    <p>Requests go through the tunnel to the hostname and port set on the VPC service. Deploy with <code>npx wrangler deploy</code>.</p>
+  </section>
+
+  <section id="verify">
+    <h2><span class="n">11</span>Check it works</h2>
+    <div class="cmd"><pre><code># Local: cloudflared is connected (expect status 200)
+Invoke-RestMethod http://127.0.0.1:20251/ready
+
+# Cloudflare: tunnel and VPC service as Cloudflare sees them
+.\cloudflare\status.ps1</code></pre></div>
+    <p>The tunnel should show as <strong>Healthy</strong> under Zero Trust → Networks → Tunnels.</p>
+  </section>
+
+  <section id="trouble">
+    <h2><span class="n">12</span>Troubleshooting</h2>
+    <dl>
+      <dt>“.env not found” or “TUNNEL_TOKEN is empty”</dt>
+      <dd>Steps 4 and 7. <code>.env</code> must be in the same folder as <code>cloudflared-tray.exe</code>.</dd>
+      <dt>Tray icon stays gray</dt>
+      <dd>Right-click → <strong>Open log</strong> and look for errors near the end. A bad token shows as an authentication error. If <code>http2</code> is blocked, try <code>TUNNEL_PROTOCOL=quic</code>, or the other way round.</dd>
+      <dt>No tray icon at all</dt>
+      <dd>It's probably in the <code>^</code> overflow menu (see step 9). Check that it's running with <code>Get-Process cloudflared-tray</code>.</dd>
+      <dt><code>build-tray.ps1</code> fails with “file in use”</dt>
+      <dd>The script stops this folder's tray app before building, so this means another program has the exe open, for example its Properties window or a security scan. Close it and build again.</dd>
+      <dt>“Not logged in” from the setup script</dt>
+      <dd>Run <code>npx wrangler login</code> again. The login expires after a while.</dd>
+      <dt>The Worker gets errors from the binding</dt>
+      <dd>Check that the local service answers at <code>http://VPC_SERVICE_HOSTNAME:VPC_SERVICE_HTTP_PORT</code> on this PC, that the tray icon is white, and that <code>service_id</code> matches <code>VPC_SERVICE_ID</code>.</dd>
+    </dl>
+  </section>
+
+  <footer>See <a href="../README.md">README.md</a> for the overview and file list.</footer>
+</main>
+<script>
+  document.querySelectorAll('.cmd').forEach(function (box) {
+    var btn = document.createElement('button');
+    btn.className = 'copy'; btn.type = 'button'; btn.textContent = 'Copy';
+    btn.addEventListener('click', function () {
+      var text = box.querySelector('code').innerText;
+      var done = function () { btn.textContent = 'Copied'; setTimeout(function () { btn.textContent = 'Copy'; }, 1500); };
+      if (navigator.clipboard) { navigator.clipboard.writeText(text).then(done, function () {}); }
+    });
+    box.appendChild(btn);
+  });
+</script>
+</body>
+</html>

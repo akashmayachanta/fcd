@@ -1,0 +1,15 @@
+# Secrets and local settings
+.env
+.dev.vars
+
+# Downloaded / built binaries
+cloudflared.exe
+cloudflared-tray.exe
+
+# Logs
+*.log
+*.log.old
+
+# Wrangler local state
+.wrangler/
+node_modules/
